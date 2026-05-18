@@ -4,7 +4,8 @@ SET search_path TO shop;
 
 CREATE TABLE customer (
     customer_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE
+        CHECK (email ~ '^[^@]+@[^@]+\.[^@]+$'),
     first_name VARCHAR(80) NOT NULL,
     last_name VARCHAR(80) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -48,3 +49,6 @@ CREATE TABLE order_item (
     quantity INT NOT NULL CHECK (quantity > 0),
     unit_price NUMERIC(10,2) NOT NULL CHECK (unit_price >= 0)
 );
+CREATE INDEX address_default_idx
+ON address(customer_id)
+WHERE is_default = TRUE;
