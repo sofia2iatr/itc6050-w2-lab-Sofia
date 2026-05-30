@@ -44,17 +44,18 @@ FROM generate_series(1, 10000) g;
 ------------------------------------------------------------
 -- 5) 100,000 orders
 ------------------------------------------------------------
-INSERT INTO orders (customer_id, order_date, status)
+INSERT INTO orders (customer_id, order_date, status, total)
 SELECT
     ((g - 1) % 10000) + 1,
     NOW() - (random() * INTERVAL '730 days'),
-    (ARRAY['new','paid','shipped','delivered','cancelled'])[ceil(random()*5)]
+    (ARRAY['new','paid','shipped','delivered','cancelled'])[ceil(random()*5)::int],
+    ROUND((random() * 500 + 10)::numeric, 2)
 FROM generate_series(1, 100000) g;
 
 ------------------------------------------------------------
 -- 6) 500,000 order items
 ------------------------------------------------------------
-INSERT INTO order_item (order_id, product_id, quantity, unit_price)
+INSERT INTO order_item (order_id, product_id, quantity, unit_price_at_sale)
 SELECT
     ((g - 1) % 100000) + 1,
     ((g - 1) % 1000) + 1,

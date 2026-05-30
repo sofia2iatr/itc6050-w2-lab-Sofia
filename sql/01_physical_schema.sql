@@ -17,7 +17,7 @@ CREATE TABLE address (
     line1 VARCHAR(120) NOT NULL,
     city VARCHAR(80) NOT NULL,
     postcode VARCHAR(20) NOT NULL,
-    country CHAR(2) NOT NULL,
+    country CHAR(2) NOT NULL CHECK (country ~ '^[A-Z]{2}$'),
     is_default BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -39,7 +39,8 @@ CREATE TABLE orders (
     order_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     customer_id BIGINT NOT NULL REFERENCES customer(customer_id) ON DELETE RESTRICT,
     order_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    status VARCHAR(40) NOT NULL
+    status VARCHAR(40) NOT NULL,
+    total NUMERIC(10,2) NOT NULL DEFAULT 0 CHECK (total >= 0)
 );
 
 CREATE TABLE order_item (
@@ -47,8 +48,9 @@ CREATE TABLE order_item (
     order_id BIGINT NOT NULL REFERENCES orders(order_id) ON DELETE RESTRICT,
     product_id BIGINT NOT NULL REFERENCES product(product_id) ON DELETE RESTRICT,
     quantity INT NOT NULL CHECK (quantity > 0),
-    unit_price NUMERIC(10,2) NOT NULL CHECK (unit_price >= 0)
+   unit_price_at_sale NUMERIC(10,2) NOT NULL CHECK (unit_price_at_sale >= 0)
 );
+
 CREATE INDEX address_default_idx
 ON address(customer_id)
 WHERE is_default = TRUE;
